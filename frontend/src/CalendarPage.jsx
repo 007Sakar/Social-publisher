@@ -1,4 +1,4 @@
-
+import { apiFetch } from "./api";
 import { useEffect, useMemo, useState } from "react";
 import {
   ChevronLeft,
@@ -16,7 +16,6 @@ import {
 
 import "./CalendarPage.css";
 
-const API_URL = "http://127.0.0.1:8000/api/";
 
 const platformOptions = [
   { id: "youtube", name: "YouTube" },
@@ -67,7 +66,7 @@ function CalendarPage({ mediaItems = [] }) {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}scheduled/`);
+      const response = await apiFetch("scheduled/");
 
       if (!response.ok) {
         throw new Error("Could not load scheduled posts.");
@@ -205,17 +204,17 @@ function CalendarPage({ mediaItems = [] }) {
     setNotice("");
 
     try {
-      const url = editingPost
-        ? `${API_URL}scheduled/${editingPost.id}/`
-        : `${API_URL}scheduled/`;
+      const endpoint = editingPost
+  ? `scheduled/${editingPost.id}/`
+  : "scheduled/";
 
-      const response = await fetch(url, {
-        method: editingPost ? "PATCH" : "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      });
+const response = await apiFetch(endpoint, {
+  method: editingPost ? "PATCH" : "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(payload)
+});
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -254,10 +253,10 @@ function CalendarPage({ mediaItems = [] }) {
     setDeletingId(postId);
 
     try {
-      const response = await fetch(
-        `${API_URL}scheduled/${postId}/`,
-        { method: "DELETE" }
-      );
+     const response = await apiFetch(
+  `scheduled/${postId}/`,
+  { method: "DELETE" }
+);
 
       if (!response.ok) {
         throw new Error("Could not delete scheduled post.");

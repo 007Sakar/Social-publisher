@@ -1,4 +1,4 @@
-
+import { apiFetch } from "./api";
 import { useEffect, useState } from "react";
 import {
   BarChart3,
@@ -16,7 +16,6 @@ import {
 
 import "./AnalyticsPage.css";
 
-const API_URL = "http://127.0.0.1:8000/api/";
 
 const platforms = [
   { id: "youtube", name: "YouTube", icon: Video },
@@ -37,7 +36,7 @@ function AnalyticsPage() {
       setLoading(true);
       setError("");
 
-      const response = await fetch(`${API_URL}scheduled/`);
+      const response = await apiFetch("scheduled/");
 
       if (!response.ok) {
         throw new Error("Could not load analytics data.");

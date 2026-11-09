@@ -3,6 +3,13 @@ import os
 
 
 class Media(models.Model):
+    owner = models.ForeignKey(
+        'auth.User',
+        on_delete=models.CASCADE,
+        related_name='media_files',
+        null=True,
+        blank=True
+    )
 
     MEDIA_TYPES = [
         ('image', 'Image'),
@@ -33,6 +40,14 @@ class Media(models.Model):
 
     
 class ScheduledPost(models.Model):
+    owner = models.ForeignKey(
+        'auth.User',
+        on_delete=models.CASCADE,
+        related_name='scheduled_posts',
+        null=True,
+        blank=True
+    )
+        
     STATUS_CHOICES = [
         ('draft', 'Draft'),
         ('scheduled', 'Scheduled'),
@@ -69,3 +84,28 @@ class ScheduledPost(models.Model):
 
     def __str__(self):
         return f"Post {self.id} - {self.status}"
+class UserSettings(models.Model):
+    owner = models.OneToOneField(
+        'auth.User',
+        on_delete=models.CASCADE,
+        related_name='socialflow_settings'
+    )
+
+    display_name = models.CharField(
+        max_length=150,
+        default='SocialFlow User'
+    )
+
+    bio = models.TextField(blank=True)
+
+    notifications = models.JSONField(
+        default=dict
+    )
+
+    appearance = models.CharField(
+        max_length=20,
+        default='dark'
+    )
+
+    def __str__(self):
+        return f"Settings for {self.owner.username}"

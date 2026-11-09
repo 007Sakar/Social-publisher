@@ -1,6 +1,6 @@
 
 from rest_framework import serializers
-from .models import Media, ScheduledPost
+from .models import Media, ScheduledPost, UserSettings
 import os
 
 
@@ -85,14 +85,12 @@ class MediaSerializer(serializers.ModelSerializer):
 
 class ScheduledPostSerializer(serializers.ModelSerializer):
 
-    # Accept the media ID when creating or updating a post.
     media = serializers.PrimaryKeyRelatedField(
-        queryset=Media.objects.all(),
+        queryset=Media.objects.none(),
         required=False,
         allow_null=True
     )
 
-    # Also return the complete media information when retrieving a post.
     media_details = MediaSerializer(
         source='media',
         read_only=True
@@ -138,6 +136,16 @@ class ScheduledPostSerializer(serializers.ModelSerializer):
             'updated_at'
         ]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        request = self.context.get('request')
+
+        if request and request.user.is_authenticated:
+            self.fields['media'].queryset = Media.objects.filter(
+                owner=request.user
+            )
+
     def validate_platforms(self, value):
 
         if len(value) != len(set(value)):
@@ -149,7 +157,7 @@ class ScheduledPostSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
 
-        status = attrs.get(
+        post_status = attrs.get(
             'status',
             getattr(self.instance, 'status', 'draft')
         )
@@ -164,7 +172,7 @@ class ScheduledPostSerializer(serializers.ModelSerializer):
             getattr(self.instance, 'platforms', [])
         )
 
-        if status == 'scheduled':
+        if post_status == 'scheduled':
 
             if not scheduled_at:
                 raise serializers.ValidationError({
@@ -177,3 +185,35 @@ class ScheduledPostSerializer(serializers.ModelSerializer):
                 })
 
         return attrs
+# ==========================================
+# USER SETTINGS SERIALIZER
+# ==========================================
+
+class UserSettingsSerializer(serializers.ModelSerializer):
+
+    username = serializers.CharField(
+        source='owner.username',
+        read_only=True
+    )
+
+    email = serializers.EmailField(
+        source='owner.email',
+        read_only=True
+    )
+
+    class Meta:
+        model = UserSettings
+
+        fields = [
+            'display_name',
+            'bio',
+            'notifications',
+            'appearance',
+            'username',
+            'email'
+        ]
+
+        read_only_fields = [
+            'username',
+            'email'
+        ]

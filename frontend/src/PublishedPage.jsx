@@ -1,4 +1,4 @@
-
+import { apiFetch } from "./api";
 import { useEffect, useState } from "react";
 import {
   Send,
@@ -12,7 +12,6 @@ import {
 
 import "./PublishedPage.css";
 
-const API_URL = "http://127.0.0.1:8000/api/";
 
 const platformNames = {
   youtube: "YouTube",
@@ -31,7 +30,7 @@ function PublishedPage() {
     setError("");
 
     try {
-      const response = await fetch(`${API_URL}scheduled/`);
+     const response = await apiFetch("scheduled/");
 
       if (!response.ok) {
         throw new Error("Could not load published posts.");

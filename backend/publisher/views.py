@@ -2,8 +2,12 @@
 from rest_framework import generics
 from rest_framework.parsers import MultiPartParser, FormParser
 
-from .models import Media, ScheduledPost
-from .serializers import MediaSerializer, ScheduledPostSerializer
+from .models import Media, ScheduledPost, UserSettings
+from .serializers import (
+    MediaSerializer,
+    ScheduledPostSerializer,
+    UserSettingsSerializer
+)
 
 
 # ==========================================
@@ -11,20 +15,28 @@ from .serializers import MediaSerializer, ScheduledPostSerializer
 # ==========================================
 
 class MediaListCreateView(generics.ListCreateAPIView):
-    queryset = Media.objects.all().order_by('-uploaded_at')
     serializer_class = MediaSerializer
     parser_classes = [MultiPartParser, FormParser]
 
+    def get_queryset(self):
+        return Media.objects.filter(
+            owner=self.request.user
+        ).order_by('-uploaded_at')
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
 
 class MediaDetailView(generics.RetrieveDestroyAPIView):
-    queryset = Media.objects.all()
     serializer_class = MediaSerializer
 
-    def perform_destroy(self, instance):
-        # Delete the physical file from storage
-        instance.file.delete(save=False)
+    def get_queryset(self):
+        return Media.objects.filter(
+            owner=self.request.user
+        )
 
-        # Delete the database record
+    def perform_destroy(self, instance):
+        instance.file.delete(save=False)
         instance.delete()
 
 
@@ -33,13 +45,36 @@ class MediaDetailView(generics.RetrieveDestroyAPIView):
 # ==========================================
 
 class ScheduledPostListCreateView(generics.ListCreateAPIView):
-    queryset = ScheduledPost.objects.select_related(
-        'media'
-    ).order_by('scheduled_at', '-created_at')
-
     serializer_class = ScheduledPostSerializer
+
+    def get_queryset(self):
+        return ScheduledPost.objects.filter(
+            owner=self.request.user
+        ).select_related(
+            'media'
+        ).order_by('scheduled_at', '-created_at')
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
 class ScheduledPostDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = ScheduledPost.objects.select_related('media')
     serializer_class = ScheduledPostSerializer
+
+    def get_queryset(self):
+        return ScheduledPost.objects.filter(
+            owner=self.request.user
+        ).select_related('media')
+# ==========================================
+# USER SETTINGS API
+# ==========================================
+
+class UserSettingsView(generics.RetrieveUpdateAPIView):
+    serializer_class = UserSettingsSerializer
+
+    def get_object(self):
+        settings, created = UserSettings.objects.get_or_create(
+            owner=self.request.user
+        )
+
+        return settings

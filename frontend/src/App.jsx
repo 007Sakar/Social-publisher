@@ -1,7 +1,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
-  LayoutDashboard,CalendarDays, Send, Image, Settings, Plus, Users, Music2,
+  LayoutDashboard,CalendarDays, Send, Image, Settings, Plus, Users, Music2,LogOut,
    UploadCloud, PlayCircle,Camera, Clock3, CheckCircle2,AlertCircle,X,FileVideo2,
    Sparkles, BarChart3, Link2, Hash, Eye, MoreHorizontal, Search,Bell,ChevronDown
 } from "lucide-react";
@@ -12,7 +12,8 @@ import PublishedPage from "./PublishedPage";
 import DraftsPage from "./DraftsPage";
 import AnalyticsPage from "./AnalyticsPage";
 import SettingsPage from "./SettingsPage";
-
+import AuthPage from "./AuthPage";
+import { apiFetch } from "./api";
 
 
 const API_URL = "http://127.0.0.1:8000/api/";
@@ -57,11 +58,18 @@ const navigation = [
 
 function App() {
   const [activePage, setActivePage] = useState("Overview");
-  const [theme, setTheme] = useState(() => {
-  const savedTheme = localStorage.getItem("socialflow_appearance");
-  return savedTheme ? JSON.parse(savedTheme) : "dark";
-});
 
+const [authToken, setAuthToken] = useState(() =>
+  sessionStorage.getItem("socialflow_token")
+);
+
+const [currentUser, setCurrentUser] = useState(null);
+
+const [authChecking, setAuthChecking] = useState(() =>
+  Boolean(sessionStorage.getItem("socialflow_token"))
+);
+  
+  const [theme, setTheme] = useState("dark");
 
   const [postStats, setPostStats] = useState({
     total: 0,
@@ -96,11 +104,131 @@ function App() {
 
   const fileInputRef = useRef(null);
 
+
+  // HANDLE SUCCESSFUL LOGIN OR REGISTRATION
+const handleLogin = (data) => {
+  sessionStorage.setItem("socialflow_token", data.token);
+
+  setCurrentUser({
+    id: data.id,
+    username: data.username,
+    email: data.email,
+  });
+
+  setAuthToken(data.token);
+};
+
+// HANDLE LOGOUT
+const handleLogout = async () => {
+  try {
+    await apiFetch("accounts/logout/", {
+      method: "POST",
+    });
+  } catch (error) {
+    console.error("Logout error:", error);
+  } finally {
+    sessionStorage.removeItem("socialflow_token");
+
+    setAuthToken(null);
+    setCurrentUser(null);
+    setMediaItems([]);
+    setPostStats({
+      total: 0,
+      scheduled: 0,
+      published: 0,
+    });
+
+    setActivePage("Overview");
+  }
+};
+
+// VERIFY EXISTING LOGIN SESSION
+useEffect(() => {
+  if (!authToken) {
+    setAuthChecking(false);
+    return;
+  }
+
+  let active = true;
+
+  const verifySession = async () => {
+    try {
+      const response = await apiFetch("accounts/profile/");
+
+      if (!response.ok) {
+        throw new Error("Session expired.");
+      }
+
+      const data = await response.json();
+
+      if (active) {
+        setCurrentUser(data);
+      }
+    } catch (error) {
+      console.error("Authentication error:", error);
+
+      sessionStorage.removeItem("socialflow_token");
+
+      if (active) {
+        setAuthToken(null);
+        setCurrentUser(null);
+      }
+    } finally {
+      if (active) {
+        setAuthChecking(false);
+      }
+    }
+  };
+
+  verifySession();
+
+  return () => {
+    active = false;
+  };
+}, [authToken]);
+
+
+// LOAD ACCOUNT-SPECIFIC APPEARANCE
+useEffect(() => {
+  if (!authToken) {
+    setTheme("dark");
+    return;
+  }
+
+  let active = true;
+
+  const loadAppearance = async () => {
+    try {
+      const response = await apiFetch("settings/");
+
+      if (!response.ok) {
+        throw new Error("Could not load appearance settings.");
+      }
+
+      const data = await response.json();
+
+      if (active) {
+        setTheme(data.appearance || "dark");
+      }
+    } catch (error) {
+      console.error("Appearance loading error:", error);
+    }
+  };
+
+  loadAppearance();
+
+  return () => {
+    active = false;
+  };
+}, [authToken]);
+
+
   // LOAD MEDIA FROM DJANGO BACKEND
   useEffect(() => {
+    if (!authToken) return;
     const loadMedia = async () => {
       try {
-        const response = await fetch(API_URL);
+       const response = await apiFetch("");
 
         if (!response.ok) {
           throw new Error("Could not load media.");
@@ -115,50 +243,44 @@ function App() {
     };
 
     loadMedia();
-  }, []);
+  }, [authToken]);
 
-
-
-  useEffect(() => {
-  localStorage.setItem(
-    "socialflow_appearance",
-    JSON.stringify(theme)
-  );
-}, [theme]);
 
   // LOAD POST STATISTICS FROM DJANGO BACKEND
-  useEffect(() => {
-    const loadPostStats = async () => {
-      try {
-        const response = await fetch(`${API_URL}scheduled/`);
+useEffect(() => {
+  if (!authToken) return;
 
-        if (!response.ok) {
-          throw new Error("Could not load post statistics.");
-        }
+  const loadPostStats = async () => {
+    try {
+      const response = await apiFetch("scheduled/");
 
-        const data = await response.json();
-
-        const posts = Array.isArray(data)
-          ? data
-          : data.results || [];
-
-        setPostStats({
-          total: posts.length,
-          scheduled: posts.filter(
-            (post) => post.status === "scheduled"
-          ).length,
-          published: posts.filter(
-            (post) => post.status === "published"
-          ).length,
-        });
-
-      } catch (error) {
-        console.error("Post statistics error:", error);
+      if (!response.ok) {
+        throw new Error("Could not load post statistics.");
       }
-    };
 
-    loadPostStats();
-  }, [activePage]);
+      const data = await response.json();
+
+      const posts = Array.isArray(data)
+        ? data
+        : data.results || [];
+
+      setPostStats({
+        total: posts.length,
+        scheduled: posts.filter(
+          (post) => post.status === "scheduled"
+        ).length,
+        published: posts.filter(
+          (post) => post.status === "published"
+        ).length,
+      });
+
+    } catch (error) {
+      console.error("Post statistics error:", error);
+    }
+  };
+
+  loadPostStats();
+}, [activePage, authToken]);
 
 
   // CREATE LOCAL FILE PREVIEW
@@ -221,7 +343,7 @@ function App() {
 
       formData.append("file", selectedFile);
 
-      const response = await fetch(API_URL, {
+      const response = await apiFetch("", {
         method: "POST",
         body: formData
       });
@@ -287,6 +409,12 @@ const handleSubmit = async () => {
     return;
   }
 
+
+
+
+
+  
+
   let scheduledAt = null;
 
   if (publishingMode === "schedule") {
@@ -320,7 +448,7 @@ const handleSubmit = async () => {
     setSavingPost(true);
     setNotice("");
 
-    const response = await fetch(`${API_URL}scheduled/`, {
+    const response = await apiFetch("scheduled/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -372,7 +500,7 @@ const handleSubmit = async () => {
     setDeletingId(mediaId);
 
     try {
-      const response = await fetch(`${API_URL}${mediaId}/`, {
+      const response = await apiFetch(`${mediaId}/`, {
         method: "DELETE",
       });
 
@@ -422,6 +550,23 @@ const handleSubmit = async () => {
   };
 
   const isVideo = file?.type.startsWith("video/");
+
+  if (authChecking) {
+  return (
+    <div className="auth-page">
+      <p>Verifying your account...</p>
+    </div>
+  );
+}
+
+if (!authToken) {
+  return (
+    <AuthPage
+      onLogin={handleLogin}
+      theme={theme}
+    />
+  );
+}
 
   return (
     <div
@@ -503,16 +648,25 @@ const handleSubmit = async () => {
             </span>
           </div>
 
-          <div className="profile">
-            <div className="profile-avatar">S</div>
+    <div className="profile">
+  <div className="profile-avatar">
+    {(currentUser?.username || "U").charAt(0).toUpperCase()}
+  </div>
 
-            <div className="profile-info">
-              <strong>Sakar</strong>
-              <span>Administrator</span>
-            </div>
+  <div className="profile-info">
+    <strong>{currentUser?.username || "User"}</strong>
+    <span>{currentUser?.email || "Account"}</span>
+  </div>
 
-            <MoreHorizontal size={20} />
-          </div>
+  <button
+    className="logout-button"
+    onClick={handleLogout}
+    title="Log out"
+  >
+    <LogOut size={20} />
+    <span>Logout</span>
+  </button>
+</div>
 
         </div>
       </aside>
@@ -557,10 +711,10 @@ const handleSubmit = async () => {
               </div>
 
               <h1>
-                {activePage === "Overview"
-                  ? "Good to see you, Sakar!"
-                  : activePage}
-              </h1>
+  {activePage === "Overview"
+    ? `Good to see you, ${currentUser?.username || "there"}!`
+    : activePage}
+</h1>
 
               <p>
                 {activePage === "Overview"

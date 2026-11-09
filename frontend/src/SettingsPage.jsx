@@ -6,7 +6,6 @@ import {
   Bell,
   Shield,
   Save,
-  Camera,
   Moon,
   Sun,
   Monitor,
@@ -15,51 +14,83 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
+import { apiFetch } from "./api";
 import "./SettingsPage.css";
-
-
-function loadSetting(key, fallback) {
-  try {
-    const saved = localStorage.getItem(key);
-    return saved ? JSON.parse(saved) : fallback;
-  } catch {
-    return fallback;
-  }
-}
 
 function SettingsPage({ appearance, setAppearance }) {
   const [activeTab, setActiveTab] = useState("profile");
 
- const [profile, setProfile] = useState(() =>
-  loadSetting("socialflow_profile", {
+  const [profile, setProfile] = useState({
     name: "SocialFlow User",
+    username: "",
     email: "",
-    username: "socialflow_user",
     bio: "",
-  })
-);
+  });
 
- 
-
-  const [notifications, setNotifications] = useState(() =>
-  loadSetting("socialflow_notifications", {
+  const [notifications, setNotifications] = useState({
     scheduled: true,
     published: true,
     failed: true,
     reminders: true,
-  })
-);
-
-useEffect(() => {
-  localStorage.setItem("socialflow_profile", JSON.stringify(profile));
-  
-  localStorage.setItem(
-    "socialflow_notifications",
-    JSON.stringify(notifications)
-  );
-}, [profile, appearance, notifications]);
+  });
 
   const [notice, setNotice] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  // LOAD SETTINGS FROM DJANGO
+  useEffect(() => {
+    let active = true;
+
+    const loadSettings = async () => {
+      try {
+        setLoading(true);
+
+        const response = await apiFetch("settings/");
+
+        if (!response.ok) {
+          throw new Error("Could not load your settings.");
+        }
+
+        const data = await response.json();
+
+        if (!active) return;
+
+        setProfile({
+          name: data.display_name || "SocialFlow User",
+          username: data.username || "",
+          email: data.email || "",
+          bio: data.bio || "",
+        });
+
+        setNotifications({
+          scheduled: true,
+          published: true,
+          failed: true,
+          reminders: true,
+          ...(data.notifications || {}),
+        });
+
+        if (data.appearance) {
+          setAppearance(data.appearance);
+        }
+      } catch (error) {
+        if (active) {
+          setNotice(error.message);
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadSettings();
+
+    return () => {
+      active = false;
+    };
+  }, [setAppearance]);
 
   const tabs = [
     { id: "profile", label: "Profile", icon: User },
@@ -82,13 +113,50 @@ useEffect(() => {
     }));
   };
 
-  const handleSave = () => {
-    setNotice("Settings saved successfully.");
-
-    setTimeout(() => {
+  // SAVE SETTINGS TO DJANGO
+  const handleSave = async () => {
+    try {
+      setSaving(true);
       setNotice("");
-    }, 3000);
+
+      const response = await apiFetch("settings/", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          display_name: profile.name,
+          bio: profile.bio,
+          notifications,
+          appearance,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.detail || "Could not save your settings."
+        );
+      }
+
+      setNotice("Settings saved successfully!");
+    } catch (error) {
+      setNotice(error.message);
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <section className="settings-page">
+        <div className="settings-panel">
+          <p>Loading your account settings...</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="settings-page">
@@ -114,9 +182,7 @@ useEffect(() => {
             return (
               <button
                 key={tab.id}
-                className={
-                  activeTab === tab.id ? "active" : ""
-                }
+                className={activeTab === tab.id ? "active" : ""}
                 onClick={() => setActiveTab(tab.id)}
               >
                 <Icon size={18} />
@@ -128,7 +194,7 @@ useEffect(() => {
 
         <div className="settings-content">
 
-          {/* Profile */}
+          {/* PROFILE */}
           {activeTab === "profile" && (
             <div className="settings-panel">
               <div className="settings-panel-heading">
@@ -163,10 +229,8 @@ useEffect(() => {
                   Username
                   <input
                     value={profile.username}
-                    onChange={(e) =>
-                      updateProfile("username", e.target.value)
-                    }
-                    placeholder="Username"
+                    readOnly
+                    title="Username changes will be added separately."
                   />
                 </label>
 
@@ -175,10 +239,7 @@ useEffect(() => {
                   <input
                     type="email"
                     value={profile.email}
-                    onChange={(e) =>
-                      updateProfile("email", e.target.value)
-                    }
-                    placeholder="Your email address"
+                    readOnly
                   />
                 </label>
 
@@ -198,14 +259,15 @@ useEffect(() => {
               <button
                 className="primary-button settings-save-button"
                 onClick={handleSave}
+                disabled={saving}
               >
                 <Save size={16} />
-                Save Profile
+                {saving ? "Saving..." : "Save Profile"}
               </button>
             </div>
           )}
 
-          {/* Appearance */}
+          {/* APPEARANCE */}
           {activeTab === "appearance" && (
             <div className="settings-panel">
               <div className="settings-panel-heading">
@@ -242,12 +304,7 @@ useEffect(() => {
                       className={`settings-option ${
                         appearance === option.id ? "selected" : ""
                       }`}
-                      onClick={() => {
-                        setAppearance(option.id);
-                        setNotice(
-                          "Appearance preference selected. Theme integration will be added next."
-                        );
-                      }}
+                      onClick={() => setAppearance(option.id)}
                     >
                       <Icon size={22} />
 
@@ -267,14 +324,15 @@ useEffect(() => {
               <button
                 className="primary-button settings-save-button"
                 onClick={handleSave}
+                disabled={saving}
               >
                 <Save size={16} />
-                Save Appearance
+                {saving ? "Saving..." : "Save Appearance"}
               </button>
             </div>
           )}
 
-          {/* Notifications */}
+          {/* NOTIFICATIONS */}
           {activeTab === "notifications" && (
             <div className="settings-panel">
               <div className="settings-panel-heading">
@@ -330,14 +388,15 @@ useEffect(() => {
               <button
                 className="primary-button settings-save-button"
                 onClick={handleSave}
+                disabled={saving}
               >
                 <Save size={16} />
-                Save Notifications
+                {saving ? "Saving..." : "Save Notifications"}
               </button>
             </div>
           )}
 
-          {/* Account */}
+          {/* ACCOUNT */}
           {activeTab === "account" && (
             <div className="settings-panel">
               <div className="settings-panel-heading">
@@ -352,7 +411,7 @@ useEffect(() => {
 
                 <div>
                   <strong>Email Address</strong>
-                  <p>Manage the email associated with your account.</p>
+                  <p>{profile.email}</p>
                 </div>
               </div>
 
@@ -363,7 +422,7 @@ useEffect(() => {
 
                 <div>
                   <strong>Password & Security</strong>
-                  <p>Password management will be connected to authentication.</p>
+                  <p>Password management will be connected separately.</p>
                 </div>
               </div>
 
@@ -372,8 +431,7 @@ useEffect(() => {
                 <div>
                   <strong>Account Security</strong>
                   <p>
-                    Authentication and account management are not
-                    connected yet.
+                    Your account is protected by SocialFlow authentication.
                   </p>
                 </div>
               </div>

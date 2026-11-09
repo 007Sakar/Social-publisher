@@ -6,8 +6,8 @@ from .views import (
     MediaDetailView,
     ScheduledPostListCreateView,
     ScheduledPostDetailView,
+    UserSettingsView,
 )
-
 urlpatterns = [
     # Media endpoints
     path('', MediaListCreateView.as_view(), name='media-list'),
@@ -24,4 +24,10 @@ urlpatterns = [
         ScheduledPostDetailView.as_view(),
         name='scheduled-post-detail'
     ),
+    # User settings endpoint
+path(
+    'settings/',
+    UserSettingsView.as_view(),
+    name='user-settings'
+),
 ]

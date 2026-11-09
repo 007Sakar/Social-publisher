@@ -76,17 +76,18 @@ button {
 .sidebar {
   width: 255px;
   flex-shrink: 0;
-  min-height: 100vh;
+  height: 100vh;
+  min-height: 0;
   background: var(--sidebar-bg);
-border-right: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
   padding: 25px 16px 15px;
   display: flex;
   flex-direction: column;
   position: sticky;
   top: 0;
-  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
-
 .brand {
   display: flex;
   align-items: center;
@@ -255,8 +256,22 @@ border-right: 1px solid var(--border-color);
   background: #365b82;
 }
 
-.profile > svg {
-  color: #898b9e;
+.profile > button {
+  color: #a5a7b8;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.profile > button:hover {
+  background: #292b3b;
+  color: #ffffff;
 }
 
 /* MAIN */
@@ -1487,4 +1502,51 @@ border: 1px solid var(--border-color);
   background: #eeeaff !important;
   color: #5944c4 !important;
   border: 1px solid #d9d1ff;
+}
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  border-top: 1px solid #282a38;
+  padding: 15px 4px;
+  margin-top: 17px;
+}
+
+.logout-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  margin-top: 8px;
+  border: 1px solid #3a3040;
+  border-radius: 8px;
+  background: #211b2b;
+  color: #ff9999;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background: #39232b;
+  color: white;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+.profile {
+  flex-shrink: 0;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #39394b;
+  border-radius: 10px;
 }

@@ -1,4 +1,4 @@
-
+import { apiFetch } from "./api";
 import { useEffect, useState } from "react";
 import {
   FileText,
@@ -13,7 +13,6 @@ import {
   Clock,
 } from "lucide-react";
 
-const API_URL = "http://127.0.0.1:8000/api/";
 
 const availablePlatforms = [
   { id: "youtube", name: "YouTube" },
@@ -39,7 +38,7 @@ function DraftsPage() {
     try {
       setLoading(true);
 
-      const response = await fetch(`${API_URL}scheduled/`);
+      const response = await apiFetch("scheduled/");
 
       if (!response.ok) {
         throw new Error("Could not load drafts.");
@@ -131,16 +130,16 @@ function DraftsPage() {
       setSaving(true);
       setNotice("");
 
-      const response = await fetch(
-        `${API_URL}scheduled/${editingDraft.id}/`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedData),
-        }
-      );
+      const response = await apiFetch(
+  `scheduled/${editingDraft.id}/`,
+  {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(updatedData),
+  }
+);
 
       const data = await response.json();
 
@@ -185,7 +184,7 @@ function DraftsPage() {
     try {
       setDeletingId(id);
 
-      const response = await fetch(`${API_URL}scheduled/${id}/`, {
+      const response = await apiFetch(`scheduled/${id}/`, {
         method: "DELETE",
       });
 
