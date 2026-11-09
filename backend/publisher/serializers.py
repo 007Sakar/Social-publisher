@@ -85,10 +85,17 @@ class MediaSerializer(serializers.ModelSerializer):
 
 class ScheduledPostSerializer(serializers.ModelSerializer):
 
+    # Accept the media ID when creating or updating a post.
     media = serializers.PrimaryKeyRelatedField(
         queryset=Media.objects.all(),
         required=False,
         allow_null=True
+    )
+
+    # Also return the complete media information when retrieving a post.
+    media_details = MediaSerializer(
+        source='media',
+        read_only=True
     )
 
     platforms = serializers.ListField(
@@ -116,6 +123,7 @@ class ScheduledPostSerializer(serializers.ModelSerializer):
             'id',
             'caption',
             'media',
+            'media_details',
             'platforms',
             'scheduled_at',
             'status',
@@ -125,6 +133,7 @@ class ScheduledPostSerializer(serializers.ModelSerializer):
 
         read_only_fields = [
             'id',
+            'media_details',
             'created_at',
             'updated_at'
         ]
@@ -140,7 +149,6 @@ class ScheduledPostSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
 
-        # Include existing values when updating a post.
         status = attrs.get(
             'status',
             getattr(self.instance, 'status', 'draft')

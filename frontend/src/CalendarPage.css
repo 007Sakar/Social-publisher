@@ -549,3 +549,182 @@
     gap: 0;
   }
 }
+
+/* =================================
+   CALENDAR - LIGHT THEME
+================================= */
+
+[data-theme="light"] .calendar-page {
+  color: #202235;
+}
+
+[data-theme="light"] .calendar-main,
+[data-theme="light"] .calendar-agenda {
+  background: #ffffff;
+  border-color: #e1e3ec;
+}
+
+[data-theme="light"] .calendar-header h2,
+[data-theme="light"] .calendar-toolbar h3,
+[data-theme="light"] .agenda-heading h3,
+[data-theme="light"] .agenda-empty strong {
+  color: #202235;
+}
+
+[data-theme="light"] .calendar-header p,
+[data-theme="light"] .calendar-toolbar span,
+[data-theme="light"] .agenda-empty p {
+  color: #626579;
+}
+
+[data-theme="light"] .calendar-controls button,
+[data-theme="light"] .agenda-heading button {
+  background: #f4f5f9;
+  color: #33354a;
+  border-color: #e1e3ec;
+}
+
+[data-theme="light"] .calendar-controls button:hover,
+[data-theme="light"] .agenda-heading button:hover {
+  background: #eaeaf3;
+}
+
+[data-theme="light"] .calendar-grid,
+[data-theme="light"] .calendar-weekday,
+[data-theme="light"] .calendar-day {
+  border-color: #e1e3ec;
+}
+
+[data-theme="light"] .calendar-weekday {
+  color: #626579;
+}
+
+[data-theme="light"] .calendar-day {
+  background: #ffffff;
+  color: #292b40;
+}
+
+[data-theme="light"] .calendar-day:hover {
+  background: #f4f2ff;
+}
+
+[data-theme="light"] .calendar-day.selected-day {
+  background: #f0eeff;
+}
+
+[data-theme="light"] .calendar-day-posts small {
+  color: #77798c;
+}
+
+[data-theme="light"] .calendar-legend {
+  color: #626579;
+}
+
+[data-theme="light"] .agenda-post {
+  background: #f8f8fc;
+  border-color: #e1e3ec;
+}
+
+[data-theme="light"] .agenda-post > p {
+  color: #33354a;
+}
+
+[data-theme="light"] .agenda-media {
+  color: #626579;
+}
+
+[data-theme="light"] .agenda-platforms span {
+  background: #eeedf6;
+  color: #494b60;
+}
+
+[data-theme="light"] .agenda-post-footer {
+  border-color: #e1e3ec;
+}
+
+[data-theme="light"] .agenda-post-footer button {
+  color: #626579;
+}
+
+[data-theme="light"] .agenda-post-footer button:hover {
+  color: #7051d8;
+}
+
+[data-theme="light"] .calendar-modal {
+  background: #ffffff;
+  border-color: #e1e3ec;
+  color: #202235;
+}
+
+[data-theme="light"] .calendar-modal-header h2 {
+  color: #202235;
+}
+
+[data-theme="light"] .calendar-modal-header > button {
+  color: #626579;
+}
+
+[data-theme="light"] .calendar-field {
+  color: #33354a;
+}
+
+[data-theme="light"] .calendar-field input,
+[data-theme="light"] .calendar-field textarea,
+[data-theme="light"] .calendar-field select {
+  background: #f7f7fb;
+  color: #202235;
+  border-color: #dcdfea;
+}
+
+[data-theme="light"] .calendar-platform-options button {
+  background: #f3f3f8;
+  border-color: #dedfea;
+  color: #494b60;
+}
+
+[data-theme="light"] .calendar-platform-options button.platform-selected {
+  background: #eeeaff;
+  border-color: #8878ed;
+  color: #5944c4;
+}
+
+[data-theme="light"] .calendar-selected-media {
+  background: #f0eeff;
+  color: #5944c4;
+}
+
+[data-theme="light"] .calendar-notice {
+  background: #f0eeff;
+  color: #5944c4;
+  border-color: #d9d1ff;
+}
+
+[data-theme="light"] .calendar-cancel {
+  background: #eeeeF5;
+  color: #33354a;
+}
+/* Light theme scheduled post labels */
+
+[data-theme="light"] .calendar-post-dot {
+  background: #e9e5ff;
+  color: #5944b8;
+}
+
+[data-theme="light"] .calendar-post-dot.draft {
+  background: #fff1d6;
+  color: #8a5a00;
+}
+
+[data-theme="light"] .calendar-post-dot.published {
+  background: #ddf5e6;
+  color: #176b3a;
+}
+
+[data-theme="light"] .calendar-post-dot.failed {
+  background: #ffe3e7;
+  color: #a52d43;
+}
+
+[data-theme="light"] .post-status {
+  color: #5944b8;
+}

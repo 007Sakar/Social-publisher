@@ -9,6 +9,11 @@ import {
 import "./App.css";
 import CalendarPage from "./CalendarPage";
 import PublishedPage from "./PublishedPage";
+import DraftsPage from "./DraftsPage";
+import AnalyticsPage from "./AnalyticsPage";
+import SettingsPage from "./SettingsPage";
+
+
 
 const API_URL = "http://127.0.0.1:8000/api/";
 
@@ -43,6 +48,7 @@ const navigation = [
   { name: "Overview", icon: LayoutDashboard },
   { name: "Create Post", icon: Plus },
   { name: "Scheduled", icon: CalendarDays },
+  { name: "Drafts", icon: FileVideo2 },
   { name: "Published", icon: Send },
   { name: "Media Library", icon: Image },
   { name: "Analytics", icon: BarChart3 },
@@ -51,6 +57,11 @@ const navigation = [
 
 function App() {
   const [activePage, setActivePage] = useState("Overview");
+  const [theme, setTheme] = useState(() => {
+  const savedTheme = localStorage.getItem("socialflow_appearance");
+  return savedTheme ? JSON.parse(savedTheme) : "dark";
+});
+
 
   const [postStats, setPostStats] = useState({
     total: 0,
@@ -70,6 +81,7 @@ function App() {
   const [deletingId, setDeletingId] = useState(null);
 
   const [caption, setCaption] = useState("");
+  const [editingDraftId, setEditingDraftId] = useState(null);
 
   const [publishingMode, setPublishingMode] = useState("now");
 
@@ -105,6 +117,14 @@ function App() {
     loadMedia();
   }, []);
 
+
+
+  useEffect(() => {
+  localStorage.setItem(
+    "socialflow_appearance",
+    JSON.stringify(theme)
+  );
+}, [theme]);
 
   // LOAD POST STATISTICS FROM DJANGO BACKEND
   useEffect(() => {
@@ -404,7 +424,16 @@ const handleSubmit = async () => {
   const isVideo = file?.type.startsWith("video/");
 
   return (
-    <div className="app-shell">
+    <div
+  className="app-shell"
+  data-theme={
+    theme === "system"
+      ? (window.matchMedia("(prefers-color-scheme: light)").matches
+          ? "light"
+          : "dark")
+      : theme
+  }
+>
 
       {/* SIDEBAR */}
       <aside className="sidebar">
@@ -621,10 +650,19 @@ const handleSubmit = async () => {
 
           </div>
 
-         {activePage === "Scheduled" ? (
+       {activePage === "Scheduled" ? (
   <CalendarPage mediaItems={mediaItems} />
+) : activePage === "Drafts" ? (
+  <DraftsPage />
 ) : activePage === "Published" ? (
   <PublishedPage />
+) : activePage === "Analytics" ? (
+  <AnalyticsPage />
+) : activePage === "Settings" ? (
+  <SettingsPage
+  appearance={theme}
+  setAppearance={setTheme}
+/>
 ) : activePage === "Media Library" ? (
             <section style={{ marginTop: "30px" }}>
               <div className="section-heading">
@@ -1179,18 +1217,24 @@ const handleSubmit = async () => {
                 <button
                   className="primary-button publish-button"
                   onClick={handleSubmit}
-                  disabled={uploading}
+                  disabled={uploading || savingPost}
                 >
 
-                  {publishingMode === "now" ? (
-                    <Send size={17} />
-                  ) : (
-                    <CalendarDays size={17} />
-                  )}
+                  {savingPost ? (
+  "Saving..."
+) : (
+  <>
+    {publishingMode === "now" ? (
+      <Send size={17} />
+    ) : (
+      <CalendarDays size={17} />
+    )}
 
-                  {publishingMode === "now"
-                    ? "Prepare post"
-                    : "Prepare schedule"}
+    {publishingMode === "now"
+      ? "Save as draft"
+      : "Schedule post"}
+  </>
+)}
 
                 </button>
 

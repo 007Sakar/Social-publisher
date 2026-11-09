@@ -132,27 +132,27 @@ function PublishedPage() {
 
               <div className="published-media">
 
-                {post.media?.file ? (
+                {post.media_details?.file ? (
 
-                  post.media.media_type === "video" ? (
-                    <video
-                      src={post.media.file}
-                      controls
-                      preload="metadata"
-                    />
-                  ) : (
-                    <img
-                      src={post.media.file}
-                      alt="Published post"
-                    />
-                  )
+  post.media_details.media_type === "video" ? (
+    <video
+      src={post.media_details.file}
+      controls
+      preload="metadata"
+    />
+  ) : (
+    <img
+      src={post.media_details.file}
+      alt={post.media_details.title}
+    />
+  )
 
-                ) : (
-                  <div className="published-no-media">
-                    <ImageIcon size={30} />
-                    <span>No media attached</span>
-                  </div>
-                )}
+) : (
+  <div className="published-no-media">
+    <ImageIcon size={30} />
+    <span>No media attached</span>
+  </div>
+)}
 
               </div>
 

@@ -1,0 +1,465 @@
+
+.analytics-page {
+  margin-top: 30px;
+  color: #f1f1f5;
+}
+
+.analytics-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 25px;
+}
+
+.analytics-heading h2 {
+  font-size: 24px;
+  margin: 0 0 7px;
+}
+
+.analytics-heading p,
+.analytics-panel-heading p {
+  color: #9294a5;
+  font-size: 13px;
+  margin: 0;
+}
+
+.analytics-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.analytics-stat-card,
+.analytics-panel {
+  background: #171923;
+  border: 1px solid #292c3b;
+  border-radius: 13px;
+  padding: 20px;
+}
+
+.analytics-stat-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #a6a8b7;
+  font-size: 13px;
+}
+
+.analytics-stat-top svg {
+  color: #a78bfa;
+}
+
+.analytics-stat-card h2 {
+  font-size: 30px;
+  margin: 18px 0 5px;
+}
+
+.analytics-stat-card p {
+  font-size: 12px;
+  color: #858797;
+  margin: 0;
+}
+
+.analytics-charts-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.analytics-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.analytics-panel-heading h3 {
+  font-size: 16px;
+  margin: 0 0 6px;
+}
+
+.analytics-panel-heading > svg {
+  color: #a78bfa;
+}
+
+.analytics-bar-chart {
+  height: 220px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: 12px;
+  padding-top: 10px;
+}
+
+.analytics-bar-column {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+  min-width: 0;
+}
+
+.analytics-bar-value {
+  font-size: 12px;
+  color: #b9a5ff;
+}
+
+.analytics-bar-track {
+  height: 165px;
+  width: 100%;
+  max-width: 35px;
+  display: flex;
+  align-items: flex-end;
+  background: #242737;
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.analytics-bar {
+  width: 100%;
+  min-height: 0;
+  background: linear-gradient(180deg, #a78bfa, #7051d8);
+  border-radius: 7px;
+  transition: height 0.3s ease;
+}
+
+.analytics-bar-label {
+  font-size: 11px;
+  color: #9294a5;
+}
+
+.analytics-platform-list {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.analytics-platform-item {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.analytics-platform-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.analytics-platform-info span {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #c7c8d2;
+}
+
+.analytics-platform-info svg {
+  color: #a78bfa;
+}
+
+.analytics-platform-info strong {
+  color: white;
+}
+
+.analytics-progress-track {
+  width: 100%;
+  height: 7px;
+  background: #292c3b;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.analytics-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #7051d8, #a78bfa);
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+.analytics-platform-item small {
+  font-size: 11px;
+  color: #858797;
+}
+
+.analytics-status-panel {
+  margin-bottom: 18px;
+}
+
+.analytics-status-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.analytics-status-list > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #202331;
+  border-radius: 9px;
+  padding: 15px;
+  color: #aeb0bf;
+  font-size: 13px;
+}
+
+.analytics-status-list strong {
+  color: white;
+  font-size: 19px;
+}
+
+.analytics-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 15px;
+  background: #202331;
+  border: 1px solid #38354e;
+  border-radius: 10px;
+  color: #b9a5ff;
+}
+
+.analytics-note svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.analytics-note p {
+  margin: 0;
+  color: #b0b1c0;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.analytics-loading,
+.analytics-error {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  background: #171923;
+  border: 1px solid #292c3b;
+  border-radius: 13px;
+  padding: 30px;
+}
+
+.analytics-loading h3,
+.analytics-error h3 {
+  margin: 0;
+}
+
+.analytics-error p {
+  color: #9294a5;
+}
+
+.analytics-spin {
+  animation: analytics-rotate 1s linear infinite;
+}
+
+@keyframes analytics-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1000px) {
+  .analytics-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .analytics-charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .analytics-heading {
+    align-items: flex-start;
+  }
+
+  .analytics-stats-grid {
+    gap: 10px;
+  }
+
+  .analytics-stat-card {
+    padding: 14px;
+  }
+
+  .analytics-stat-card h2 {
+    font-size: 24px;
+  }
+
+  .analytics-status-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+
+.analytics-range-selector {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px;
+  background: #202331;
+  border: 1px solid #292c3b;
+  border-radius: 8px;
+}
+
+.analytics-range-selector button {
+  border: none;
+  background: transparent;
+  color: #9294a5;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.analytics-range-selector button:hover {
+  color: white;
+  background: #303447;
+}
+
+.analytics-range-selector button.active {
+  color: white;
+  background: #7051d8;
+}
+
+@media (max-width: 500px) {
+  .analytics-panel-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* Keep the 30- and 90-day charts readable */
+.analytics-bar-chart.range-30,
+.analytics-bar-chart.range-90 {
+  gap: 3px;
+}
+
+.analytics-bar-chart.range-30 .analytics-bar-label,
+.analytics-bar-chart.range-90 .analytics-bar-label {
+  font-size: 9px;
+}
+
+/* =================================
+   ANALYTICS PAGE - LIGHT THEME
+================================= */
+
+[data-theme="light"] .analytics-page {
+  color: #202235;
+}
+
+[data-theme="light"] .analytics-heading h2,
+[data-theme="light"] .analytics-stat-card h2,
+[data-theme="light"] .analytics-panel-heading h3,
+[data-theme="light"] .analytics-loading h3,
+[data-theme="light"] .analytics-error h3 {
+  color: #202235;
+}
+
+[data-theme="light"] .analytics-heading p,
+[data-theme="light"] .analytics-panel-heading p {
+  color: #626579;
+}
+
+[data-theme="light"] .analytics-stat-card,
+[data-theme="light"] .analytics-panel,
+[data-theme="light"] .analytics-loading,
+[data-theme="light"] .analytics-error {
+  background: #ffffff;
+  border-color: #e1e3ec;
+  color: #202235;
+}
+
+[data-theme="light"] .analytics-stat-top {
+  color: #626579;
+}
+
+[data-theme="light"] .analytics-stat-card p {
+  color: #77798c;
+}
+
+[data-theme="light"] .analytics-bar-value {
+  color: #7051d8;
+}
+
+[data-theme="light"] .analytics-bar-track {
+  background: #e9e9f2;
+}
+
+[data-theme="light"] .analytics-bar-label {
+  color: #626579;
+}
+
+[data-theme="light"] .analytics-platform-info span {
+  color: #494b60;
+}
+
+[data-theme="light"] .analytics-platform-info strong {
+  color: #202235;
+}
+
+[data-theme="light"] .analytics-progress-track {
+  background: #e9e9f2;
+}
+
+[data-theme="light"] .analytics-platform-item small {
+  color: #77798c;
+}
+
+[data-theme="light"] .analytics-status-list > div {
+  background: #f3f3f8;
+  color: #626579;
+}
+
+[data-theme="light"] .analytics-status-list strong {
+  color: #202235;
+}
+
+[data-theme="light"] .analytics-note {
+  background: #f0eeff;
+  border-color: #d9d1ff;
+  color: #7051d8;
+}
+
+[data-theme="light"] .analytics-note p {
+  color: #5944a8;
+}
+
+[data-theme="light"] .analytics-error p {
+  color: #626579;
+}
+
+[data-theme="light"] .analytics-range-selector {
+  background: #f3f3f8;
+  border-color: #e1e3ec;
+}
+
+[data-theme="light"] .analytics-range-selector button {
+  color: #626579;
+}
+
+[data-theme="light"] .analytics-range-selector button:hover {
+  color: #202235;
+  background: #e8e6f3;
+}
+
+[data-theme="light"] .analytics-range-selector button.active {
+  color: #ffffff;
+  background: #7051d8;
+}
